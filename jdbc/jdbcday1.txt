@@ -1,0 +1,156 @@
+JDBC 
+
+* Why database
+ 
+* Driver: Driver is a java program/Java API which allows the java application
+    to establish connection with the database and perform the database related
+    operations.
+
+  Types of Drivers:
+  1. JDBC-ODBC Bridge (Type I): Easily available.
+     Initially used to connect with database through ODBC mechanisms.
+     ODBC- Open database Connectivity.It converts JDBC calls into ODBC and then send it
+      to ODBC driver.But it works on windows platform only.
+     So it is not portable.
+     Not suitable for higher volume of transactions. 
+     Slow in performance.
+
+  2.Native-API partly java Driver (Type II): Better than TypeI
+     It is not written in java language.It uses native API.
+     So Native API must be installed in client system.
+     It is not portable.
+     It is not thread safe.
+     It is obsolete now.
+
+  3.Net-Protocol All java Driver (Type III):
+     This driver is server based.It is implemented in java.
+     It is portable.
+     It is very flexible and allows access to multiple databases.
+     It converts JDBC calls into vendor specific protocols.
+     * But Data source and connection pool has to be configured on a server 
+        (typically an application server).
+  
+  4. Native Protocol All-Java Driver(Type IV):
+     Completely written in Java.
+     JDBC calls are directly converted ito network protocol.
+     Driver is provided by Database vendor.
+     No need to install special software on the client or server.
+     Performance is good.
+     ** Needs different driver for each database.
+
+-------------------------------------------------------
+
+Class.forName("")   
+It takes a string class name and loads  class dynamically.
+When class is loaded it registers itself with DriverManager using 
+ registerDriver() method.
+
+DriverManager.getConnection(url,userid,password):
+ getConnection() method of DriverManager class makes a connection to given
+database with URL,uid,password.
+DriverManager attempts to select appropriate driver from set of
+ registered JDBC drivers.
+
+----------------------------------------------------------------
+
+      
+
+ojdbc jar file : D:\app\Deepa.Ubhe\product\12.1.0\dbhome_2\jdbc\lib
+
+tnsnames.ora file -> D:\app\Deepa.Ubhe\product\12.1.0\dbhome_2\NETWORK\ADMIN
+
+
+url ="jdbc:oracle:thin:@localhost:1521:orcl"
+
+jdbc - API
+oracle - database
+thin  - driver
+@localhost - IP address / server name on which oracle is running
+1521       - port number
+orcl       - oracle service name
+///////////////////////////////////////////////////////////////
+
+create below table in database:
+
+create table emp(empid number,ename varchar2(20),esal number,edeptno number);
+	
+ insert into emp values(100,'amit',20000,10);
+ insert into emp values(101,'Soha',22000,20);
+ insert into emp values(102,'Siya',24000,30);
+ insert into emp values(103,'Ram',24400,10);
+ insert into emp values(104,'Tina',27400,20);
+ commit;
+
+//////////////////////////////////////////////////
+
+ResultSet:
+It is returned when SQL query is executed.
+It is a cursor representing data from a database.
+It contains only the pointer to the data.
+-------------------------------------------------------------------
+
+* Types of JDBC Statement 
+
+  Statement  --> drawback- query is compiled each time by database, it degrades performance
+      |
+      |
+ PreparedStatement [ to execute parameterized SQL statement]
+      |
+      |
+ CallableStatemnt  [ to execute stored procedure/function ]
+
+
+1. Statement  : is used to execute a single SQL query.
+2. PreparedStatement : is used to execute a parameterised SQL query.
+3. CallableStatment : is used to invoke/call a stored procedure.
+-------------------------------------------------------------------------
+
+
+code
+
+-----------------
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+
+public class Demo1 {
+
+	public static void main(String[] args) throws ClassNotFoundException, SQLException 
+	{
+
+
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+
+		String url="jdbc:oracle:thin:@localhost:1521:orcl";
+
+		Connection con = DriverManager.getConnection(url, "system","java");
+
+		System.out.println("connected successfully .... ");
+
+		Statement st=con.createStatement();
+
+		ResultSet rs = st.executeQuery("select * from emp");
+
+
+		while(rs.next())
+		{	  
+			System.out.println(rs.getInt(1)+"  "+rs.getString(2)+" "+rs.getInt(3)+" "+rs.getInt(4));
+		}
+
+
+	}
+}
+
+--------------------------------------------------
+
+Select query --> use executeQuery() method
+
+DML/DDL --> use executeUpdate() method
+
+----------------------------------------------------
+
+
